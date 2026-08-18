@@ -1,0 +1,112 @@
+/* ============================================================================
+   Material You 3 主题 · 斗地主对局层
+   扑克牌精灵定位规则与原站保持一致（保证牌面正确渲染），
+   视觉上叠加 M3 的阴影、圆角与动效。
+   ========================================================================== */
+
+/* ---------- 牌列表容器 ---------- */
+.ddz-poker-list {
+  overflow-x: auto;
+  position: relative;
+}
+.ddz-poker-list::-webkit-scrollbar { display: none; }
+
+/* ---------- 单张牌（M3 化：圆角 + 投影 + 拾起动效） ---------- */
+.ddz-poker {
+  -webkit-tap-highlight-color: transparent;
+  background-clip: content-box;
+  background-image: url(../media/ddz-cards.f0afe0e2e1769c6f42a8.png);
+  background-repeat: no-repeat;
+  height: 159px;
+  position: absolute;
+  transform-origin: 0 0;
+  transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  width: 116px;
+  border-radius: 7px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.30), 0 1px 2px rgba(0, 0, 0, 0.20);
+  cursor: pointer;
+}
+
+/* 手牌悬停（桌面端） */
+.ddz-my-poker:hover {
+  filter: brightness(1.06);
+}
+
+/* 手牌被选中（JS 抬起）时的投影加强 */
+.ddz-my-poker {
+  transition: filter 0.2s ease, top 0.15s ease-out, box-shadow 0.2s ease;
+}
+.ddz-my-poker[style*="z-index"] { box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.22); }
+
+/* 明牌区（别人打出的牌）略小阴影 */
+.ddz-poker-list .ddz-poker:not(.ddz-my-poker) {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28), 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- 牌面精灵定位（与原站一致） ---------- */
+.ddz-poker-1{background-position:-238px -646px}
+.ddz-poker-10{background-position:-120px -646px}
+.ddz-poker-11{background-position:-2px -646px}
+.ddz-poker-12{background-position:-1418px -485px}
+.ddz-poker-13{background-position:-1300px -485px}
+.ddz-poker-14{background-position:-1182px -485px}
+.ddz-poker-15{background-position:-1064px -485px}
+.ddz-poker-16{background-position:-946px -485px}
+.ddz-poker-17{background-position:-828px -485px}
+.ddz-poker-18{background-position:-710px -485px}
+.ddz-poker-19{background-position:-592px -485px}
+.ddz-poker-2{background-position:-474px -485px}
+.ddz-poker-20{background-position:-356px -485px}
+.ddz-poker-21{background-position:-238px -485px}
+.ddz-poker-22{background-position:-120px -485px}
+.ddz-poker-23{background-position:-2px -485px}
+.ddz-poker-24{background-position:-1418px -324px}
+.ddz-poker-25{background-position:-1300px -324px}
+.ddz-poker-26{background-position:-1182px -324px}
+.ddz-poker-27{background-position:-1064px -324px}
+.ddz-poker-28{background-position:-946px -324px}
+.ddz-poker-29{background-position:-828px -324px}
+.ddz-poker-3{background-position:-710px -324px}
+.ddz-poker-30{background-position:-592px -324px}
+.ddz-poker-31{background-position:-474px -324px}
+.ddz-poker-32{background-position:-356px -324px}
+.ddz-poker-33{background-position:-238px -324px}
+.ddz-poker-34{background-position:-120px -324px}
+.ddz-poker-35{background-position:-2px -324px}
+.ddz-poker-36{background-position:-1418px -163px}
+.ddz-poker-37{background-position:-1300px -163px}
+.ddz-poker-38{background-position:-1182px -163px}
+.ddz-poker-39{background-position:-1064px -163px}
+.ddz-poker-4{background-position:-946px -163px}
+.ddz-poker-40{background-position:-828px -163px}
+.ddz-poker-41{background-position:-710px -163px}
+.ddz-poker-42{background-position:-592px -163px}
+.ddz-poker-43{background-position:-474px -163px}
+.ddz-poker-44{background-position:-356px -163px}
+.ddz-poker-45{background-position:-238px -163px}
+.ddz-poker-46{background-position:-120px -163px}
+.ddz-poker-47{background-position:-2px -163px}
+.ddz-poker-48{background-position:-1418px -2px}
+.ddz-poker-49{background-position:-1300px -2px}
+.ddz-poker-5{background-position:-1182px -2px}
+.ddz-poker-50{background-position:-1064px -2px}
+.ddz-poker-51{background-position:-946px -2px}
+.ddz-poker-52{background-position:-828px -2px}
+.ddz-poker-53{background-position:-710px -2px}
+.ddz-poker-54{background-position:-592px -2px}
+.ddz-poker-0{background-position:-474px -2px}
+.ddz-poker-6{background-position:-356px -2px}
+.ddz-poker-7{background-position:-238px -2px}
+.ddz-poker-8{background-position:-120px -2px}
+.ddz-poker-9{background-position:-2px -2px}
+
+/* ---------- 对局桌面布局（M3 牌桌节奏） ---------- */
+/* 自己手牌区 */
+.ddz-poker-list.mt-8.mx-auto { margin-top: 1.5rem; }
+
+/* 明牌（牌桌中央） */
+.ddz-poker-list.mx-auto { margin-bottom: 0.5rem; }
+.ddz-poker-list.mt-2.w-2\/3 { margin-top: 0.75rem; }
+
+/* 回合提示区域 */
+.ddz-poker-list .text-4xl { letter-spacing: 0.05em; }

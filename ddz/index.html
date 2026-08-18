@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="./static/media/icon64-4fb9fc.png" />
+  <link rel="apple-touch-icon" href="./static/media/icon64-4fb9fc.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#386A20" />
+  <meta name="description" content="斗地主 · Material You 3 主题套壳。基于原站接口（线下聚会游戏），无广告纯净版，支持在线联机对战。" />
+  <meta name="color-scheme" content="light dark" />
+  <!-- CDN 防盗链：无 Referer 时放行，故页面请求一律不带 Referer -->
+  <meta name="referrer" content="no-referrer" />
+  <title>斗地主 · Material You</title>
+
+  <!-- 字体：Roboto（带中文系统字体回退，离线也可用） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Material You 3 主题（完整替换原站样式） -->
+  <link href="./static/css/main.280d4d20.css" rel="stylesheet" />
+
+  <!-- 关键资源预加载 -->
+  <link rel="preload" as="script" href="./static/js/474.edef6fdf.chunk.js" />
+  <link rel="preload" as="script" href="./static/js/app.03832cca.chunk.js" />
+  <link rel="preload" as="script" href="./static/js/ddz.1895f9e7.chunk.js" />
+  <link rel="preload" as="image" href="./static/media/logo-4fb9fc.svg" />
+</head>
+<body>
+  <div id="root">
+    <!-- Material You 加载动画（React 挂载后自动被替换） -->
+    <div class="m3-splash" id="m3-splash">
+      <img class="splash-logo" src="./static/media/logo-4fb9fc.svg" alt="斗地主" />
+      <div class="splash-title">斗地主</div>
+      <div class="splash-bar"></div>
+      <div class="splash-sub">Material You 3 · 加载中…</div>
+    </div>
+  </div>
+
+  <!-- 入口：原站应用（n.p 已指向本地 ./static/，WebSocket 经本地服务中继） -->
+  <script defer="defer" src="./static/js/main.5f798aa7.js"></script>
+
+  <script>
+    // 兜底：即使 React 未及时替换，也优雅淡出加载动画
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var s = document.getElementById('m3-splash');
+        if (s) { s.classList.add('done'); setTimeout(function () { s.remove(); }, 500); }
+      }, 6000);
+    });
+  </script>
+</body>
+</html>

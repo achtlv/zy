@@ -1,0 +1,14 @@
+{
+  "name": "ddz-material-you",
+  "private": true,
+  "version": "1.0.0",
+  "description": "斗地主 Material You 3 套壳 — Cloudflare Workers 部署",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev --remote"
+  },
+  "devDependencies": {
+    "wrangler": "^4.14.0"
+  }
+}
