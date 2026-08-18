@@ -5,43 +5,54 @@
 - **界面**：Material Design 3（M3）风格 —— 绿色种子色调化配色、圆角形状体系、层级阴影、M3 按钮/对话框/Snackbar；对局中自动切换深绿牌桌。
 - **接口**：100% 使用原站接口。房间创建/加入、WebSocket 联机协议全部透传原站，游戏逻辑为原站代码。
 - **零成本**：仅使用 Cloudflare **免费版**功能（Workers 免费计划 + 静态资源托管），无服务器、无本地电脑依赖，手机浏览器直接可玩。
-- **自动部署**：推送 GitHub → GitHub Actions 自动部署到 Cloudflare Workers。
+- **自动部署**：推送 GitHub → Cloudflare 自动部署（Git 直连，**无需 API Token**）。
 
-## 部署（一次性配置，约 5 分钟）
+## 部署（方式 A：Git 直连，无需 API Token，推荐）
 
 ### 1. 创建 GitHub 仓库并推送
 
 ```bash
-# 在本地把本项目推送到你的 GitHub 仓库
-git init
-git add -A
-git commit -m "init: 斗地主 Material You 3 套壳"
 git remote add origin https://github.com/<你的用户名>/<仓库名>.git
 git push -u origin main
 ```
 
-### 2. Cloudflare 侧（免费）
+### 2. Cloudflare 面板连接仓库（免费）
 
-在 [dash.cloudflare.com](https://dash.cloudflare.com) 完成：
+1. 打开 [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Workers**。
+2. 选择 **Connect to Git**（首次会要求授权 Cloudflare 的 GitHub App，只需点允许，**不需要任何 Token**）。
+3. 选择你的仓库。
+4. 项目设置里：
+   - **项目名填 `ddz-material-you`**（必须与 `wrangler.jsonc` 里的 `name` 一致，否则构建失败）；
+   - 构建命令（Build command）：`npm ci`；
+   - 部署命令（Deploy command）：`npx wrangler deploy`；
+   - 生产分支：`main`。
+5. 点击 **Save and Deploy**。
 
-1. **获取 API Token**：`我的个人资料 → API 令牌 → 创建令牌`，
-   选择模板 **Edit Cloudflare Workers**，创建后复制 Token。
-2. **获取 Account ID**：仪表盘首页右侧 `账户 ID`。
-3. 打开 GitHub 仓库 → `Settings → Secrets and variables → Actions`，
-   添加两个密钥：
-   - `CLOUDFLARE_API_TOKEN` = 刚才的 Token
-   - `CLOUDFLARE_ACCOUNT_ID` = 账户 ID
+### 3. 完成
 
-### 3. 自动部署
-
-推送代码到 `main` 分支即自动触发 `.github/workflows/deploy.yml`，
-部署完成后访问：
+部署成功后访问：
 
 ```
-https://<worker名>.<你的子域>.workers.dev/ddz/
+https://ddz-material-you.<你的子域>.workers.dev/ddz/
 ```
+
+以后每次 `git push` 到 `main`，Cloudflare 自动重新构建并部署。
 
 > 也可以自定义域名：Workers → 你的 Worker → Settings → Domains & Routes → 绑定自己的域名。
+
+## 部署（方式 B：GitHub Actions，需 API Token，备选）
+
+如果你希望由 GitHub Actions 控制部署（比如需要自定义 CI 流程、或不想用 Cloudflare 的 Git 集成），
+才需要 API Token。仓库已附带 `.github/workflows/deploy.yml`：
+
+1. Cloudflare：`我的个人资料 → API 令牌 → 创建令牌` → 模板 **Edit Cloudflare Workers**，复制 Token。
+2. 仪表盘首页右侧复制 **Account ID**。
+3. GitHub 仓库 → `Settings → Secrets and variables → Actions`，添加：
+   - `CLOUDFLARE_API_TOKEN` = Token
+   - `CLOUDFLARE_ACCOUNT_ID` = 账户 ID
+4. 推送代码即自动部署。
+
+两种方式二选一即可，推荐方式 A。
 
 ## 本地开发预览
 
@@ -62,7 +73,7 @@ npx wrangler dev
 │       └── media/              # 本地化媒体（卡牌精灵、Logo、图标）
 ├── src/worker.js               # Cloudflare Worker：静态服务 + SPA 回退 + WebSocket 中继
 ├── wrangler.jsonc              # Workers 配置（assets 绑定 ./ddz）
-├── .github/workflows/deploy.yml# GitHub Actions 自动部署
+├── .github/workflows/deploy.yml# 方式 B 的自动部署（可选，需 API Token）
 └── package.json
 ```
 
