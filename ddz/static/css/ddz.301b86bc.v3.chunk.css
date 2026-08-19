@@ -37,16 +37,10 @@
    竖屏：保持扇形堆叠
    选中：整张牌向上抬升（过渡动画）+ 阴影增强 + 微提亮 */
 .ddz-my-poker {
-  transition:
-    top 0.24s cubic-bezier(0.2, 0, 0, 1),
-    transform 0.24s cubic-bezier(0.2, 0, 0, 1),
-    filter 0.2s ease,
-    box-shadow 0.2s ease;
-  will-change: top, transform;
+  transition: filter 0.15s ease;
 }
 .ddz-my-poker-selected {
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.38), 0 5px 10px rgba(0, 0, 0, 0.26);
-  filter: brightness(1.08);
+  filter: brightness(0.7) !important;
 }
 
 /* 明牌区（别人打出的牌）略小阴影 */
