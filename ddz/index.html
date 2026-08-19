@@ -18,23 +18,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <!-- 主题样式（完整替换原站样式） -->
-  <link href="./static/css/main.280d4d20.css" rel="stylesheet" />
+  <link href="./static/css/main.280d4d20.v2.css" rel="stylesheet" />
 
   <!-- 关键资源预加载 -->
   <link rel="preload" as="script" href="./static/js/474.edef6fdf.chunk.js" />
-  <link rel="preload" as="script" href="./static/js/app.03832cca.chunk.js" />
-  <link rel="preload" as="script" href="./static/js/ddz.1895f9e7.chunk.js" />
+  <link rel="preload" as="script" href="./static/js/app.03832cca.v2.chunk.js" />
+  <link rel="preload" as="script" href="./static/js/ddz.1895f9e7.v2.chunk.js" />
   <link rel="preload" as="image" href="./static/media/logo-4fb9fc.svg" />
 </head>
 <body>
   <!-- gid 预热：后台向 Worker 申请 gid 并种 cookie，建房时无需等待（消除建房白屏） -->
   <img src="/__gid" width="1" height="1" alt="" style="position:absolute;opacity:0;pointer-events:none" />
 
-  <!-- 进入房间加载层：建房/进房到牌桌渲染完成前显示，避免白屏 -->
+  <!-- 进入房间加载层：建房/进房到牌桌渲染完成前显示，进度条 + 当前原因 -->
   <div id="room-loading">
     <div class="rl-card">
-      <div class="rl-spin"></div>
-      <div class="rl-text">进入房间中…</div>
+      <div class="rl-text" id="rl-reason">正在加载房间…</div>
+      <div class="rl-bar"><div class="rl-bar-fill" id="rl-fill"></div></div>
+      <div class="rl-sub" id="rl-sub">首次进入需连接服务器，请稍候</div>
     </div>
   </div>
 
@@ -49,7 +50,7 @@
   </div>
 
   <!-- 入口：原站应用（n.p 已指向本地 ./static/） -->
-  <script defer="defer" src="./static/js/main.5f798aa7.js"></script>
+  <script defer="defer" src="./static/js/main.5f798aa7.v2.js"></script>
 
   <script>
     // 兜底：即使 React 未及时替换，也优雅淡出加载动画
@@ -60,26 +61,45 @@
       }, 6000);
     });
 
-    // 进入房间加载层：路径为 /{房间号} 且牌桌尚未渲染时显示，渲染完成或超时后隐藏
+    // 进入房间加载层：路径为 /{房间号} 且牌桌尚未渲染时显示。
+    // 进度条按真实阶段推进：加载房间 → 连接服务器 → 同步房间数据 → 完成。
+    // 注意：避免 innerText（强制布局）与高频回调，防止干扰对局渲染。
     (function () {
       var el = document.getElementById('room-loading');
       if (!el) return;
-      var timer = null;
-      function hide() { el.classList.remove('show'); if (timer) { clearTimeout(timer); timer = null; } }
+      var fill = document.getElementById('rl-fill');
+      var reason = document.getElementById('rl-reason');
+      var timer = null, stage = 0, pending = false;
+      function setProgress(p, text, sub) {
+        if (p > stage) { stage = p; if (fill) fill.style.width = stage + '%'; }
+        if (text && reason) reason.textContent = text;
+        var s = document.getElementById('rl-sub');
+        if (sub && s) s.textContent = sub;
+      }
+      function hide() {
+        el.classList.remove('show');
+        if (timer) { clearTimeout(timer); timer = null; }
+        setTimeout(function () { stage = 0; }, 400);
+      }
       function upd() {
-        var isRoom = /^\/[a-z0-9]{3,8}/.test(location.pathname);
-        var ready = !!document.getElementById('userseat0');
-        if (isRoom && !ready) {
-          el.classList.add('show');
-          if (!timer) timer = setTimeout(hide, 12000);
-        } else {
-          hide();
-        }
+        if (pending) return;
+        pending = true;
+        setTimeout(function () {
+          pending = false;
+          try {
+            var isRoom = /^\/[a-z0-9]{3,8}/.test(location.pathname);
+            if (!isRoom) { el.classList.remove('show'); return; }
+            if (document.getElementById('userseat0')) { hide(); return; }
+            el.classList.add('show');
+            if (stage < 25) setProgress(18, '正在加载房间…', '正在获取房间配置');
+            if (document.body.textContent.indexOf('房间号') >= 0 && stage < 70) setProgress(62, '正在连接服务器…', '正在建立游戏连接');
+            if (!timer) timer = setTimeout(hide, 12000);
+          } catch (e) { /* 忽略异常，绝不阻塞页面 */ }
+        }, 100);
       }
       window.addEventListener('popstate', upd);
       new MutationObserver(upd).observe(document.body, { childList: true, subtree: true });
       upd();
-    })();
-  </script>
+    })();  </script>
 </body>
 </html>

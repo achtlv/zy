@@ -40,11 +40,13 @@ export default {
       return handleGidPrefetch(request);
     }
 
-    // 3) 静态文件：直出；找不到则 404
+    // 3) 静态文件：直出（带哈希的文件名不可变，允许浏览器永久缓存，加快重复访问）；找不到则 404
     if (FILE_RE.test(url.pathname)) {
       const resp = await env.ASSETS.fetch(request);
       if (resp.status === 404 || resp.status === 307) return new Response('Not Found', { status: 404 });
-      return resp;
+      const out = new Response(resp.body, resp);
+      out.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+      return out;
     }
 
     // 4) SPA 回退：其余路径（首页 /、房间 /{roomId} 等）一律返回 index.html
