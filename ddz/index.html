@@ -27,6 +27,17 @@
   <link rel="preload" as="image" href="./static/media/logo-4fb9fc.svg" />
 </head>
 <body>
+  <!-- gid 预热：后台向 Worker 申请 gid 并种 cookie，建房时无需等待（消除建房白屏） -->
+  <img src="/__gid" width="1" height="1" alt="" style="position:absolute;opacity:0;pointer-events:none" />
+
+  <!-- 进入房间加载层：建房/进房到牌桌渲染完成前显示，避免白屏 -->
+  <div id="room-loading">
+    <div class="rl-card">
+      <div class="rl-spin"></div>
+      <div class="rl-text">进入房间中…</div>
+    </div>
+  </div>
+
   <div id="root">
     <!-- 加载动画（React 挂载后自动被替换） -->
     <div class="m3-splash" id="m3-splash">
@@ -48,6 +59,27 @@
         if (s) { s.classList.add('done'); setTimeout(function () { s.remove(); }, 500); }
       }, 6000);
     });
+
+    // 进入房间加载层：路径为 /{房间号} 且牌桌尚未渲染时显示，渲染完成或超时后隐藏
+    (function () {
+      var el = document.getElementById('room-loading');
+      if (!el) return;
+      var timer = null;
+      function hide() { el.classList.remove('show'); if (timer) { clearTimeout(timer); timer = null; } }
+      function upd() {
+        var isRoom = /^\/[a-z0-9]{3,8}/.test(location.pathname);
+        var ready = !!document.getElementById('userseat0');
+        if (isRoom && !ready) {
+          el.classList.add('show');
+          if (!timer) timer = setTimeout(hide, 12000);
+        } else {
+          hide();
+        }
+      }
+      window.addEventListener('popstate', upd);
+      new MutationObserver(upd).observe(document.body, { childList: true, subtree: true });
+      upd();
+    })();
   </script>
 </body>
 </html>

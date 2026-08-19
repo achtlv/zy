@@ -34,17 +34,40 @@ export default {
       return handleWebSocket(request, url);
     }
 
-    // 2) 静态文件：直出；找不到则 404
+    // 2) gid 预热：页面加载时后台请求此端点，把 gid 种到浏览器
+    //    （建房时中继直接复用 cookie，省掉冷连接时的预取往返，消除白屏）
+    if (url.pathname === '/__gid') {
+      return handleGidPrefetch(request);
+    }
+
+    // 3) 静态文件：直出；找不到则 404
     if (FILE_RE.test(url.pathname)) {
       const resp = await env.ASSETS.fetch(request);
       if (resp.status === 404 || resp.status === 307) return new Response('Not Found', { status: 404 });
       return resp;
     }
 
-    // 3) SPA 回退：其余路径（首页 /、房间 /{roomId} 等）一律返回 index.html
+    // 4) SPA 回退：其余路径（首页 /、房间 /{roomId} 等）一律返回 index.html
     return env.ASSETS.fetch(new Request(new URL('/', url.origin), request));
   },
 };
+
+async function handleGidPrefetch(request) {
+  const cookieHeader = request.headers.get('Cookie') || '';
+  if (parseGid(cookieHeader)) return new Response(null, { status: 204 });
+  try {
+    const gidResp = await fetch(`https://${UPSTREAM_HOST}/ddz`, { headers: { 'User-Agent': UA } });
+    await gidResp.arrayBuffer();
+    const gid = extractGid(gidResp.headers);
+    if (!gid) return new Response(null, { status: 204 });
+    return new Response(null, {
+      status: 204,
+      headers: { 'Set-Cookie': `${GID_COOKIE}=${encodeURIComponent(gid)}; Path=/; Max-Age=31536000; SameSite=Lax` },
+    });
+  } catch {
+    return new Response(null, { status: 204 });
+  }
+}
 
 async function handleWebSocket(request, url) {
   const pair = new WebSocketPair();
