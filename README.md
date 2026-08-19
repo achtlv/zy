@@ -110,3 +110,4 @@ Cloudflare Worker 在服务端代连：
 
 - 原站更新后如需同步，重新下载对应 JS 并按 README 说明套用同样补丁即可。
 - 免费版 Worker 的 WebSocket 连接在长时间空闲时可能被回收（游戏内有自动重连 + gid 复用，会自动恢复）。
+# zy
