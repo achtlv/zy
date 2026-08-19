@@ -2,10 +2,9 @@
  * 斗地主 Material You 3 套壳 —— Cloudflare Worker（免费版可用）
  *
  * 一个 Worker 同时承担：
- *   1. 静态资源服务（assets 绑定映射到 ./ddz，index.html 即域名根 /）
- *   2. SPA 回退：/ddz/** 未知路径 → 根 index.html
- *   3. 路径规整：/ 与 /ddz → /ddz/
- *   4. WebSocket 中继：浏览器 wss://本站/ddz/房间?v=1
+ *   1. 静态资源服务（assets 绑定映射到 ./ddz，即域名根 /）
+ *   2. SPA 回退：首页 /、房间 /{roomId} 等所有非文件路径 → index.html（斗地主在根目录运行）
+ *   3. WebSocket 中继：浏览器 wss://本站/ddz/房间?v=1
  *      → Worker 向原站申请独立 gid Cookie（服务端申请，不受浏览器第三方 Cookie 限制）
  *      → 再以 wss://game.hullqin.cn/ddz/房间?v=1 出站连接并双向转发
  *
@@ -35,26 +34,15 @@ export default {
       return handleWebSocket(request, url);
     }
 
-    // 2) 路径规整
-    if (url.pathname === '/' || url.pathname === '/ddz') {
-      return Response.redirect(new URL('/ddz/', url), 302);
-    }
-
-    // 3) /ddz/* 应用路径：静态文件直出；其余 SPA 回退到 index.html（即资产根 /）
-    if (url.pathname === '/ddz/' || url.pathname.startsWith('/ddz/')) {
-      const rest = url.pathname.slice('/ddz'.length); // '/ddz/static/x' -> '/static/x'
-      const isFile = FILE_RE.test(rest);
-      const assetPath = rest === '/' || !isFile ? '/' : rest;
-      let resp = await env.ASSETS.fetch(new Request(new URL(assetPath, url.origin), request));
-      if (resp.status === 404 || resp.status === 307) {
-        resp = await env.ASSETS.fetch(new Request(new URL('/', url.origin), request));
-      }
+    // 2) 静态文件：直出；找不到则 404
+    if (FILE_RE.test(url.pathname)) {
+      const resp = await env.ASSETS.fetch(request);
+      if (resp.status === 404 || resp.status === 307) return new Response('Not Found', { status: 404 });
       return resp;
     }
 
-    // 4) 非应用路径：只允许已存在资源，其余 404
-    const resp = await env.ASSETS.fetch(new Request(new URL(url.pathname, url.origin), request));
-    return resp.status === 404 ? new Response('Not Found', { status: 404 }) : resp;
+    // 3) SPA 回退：其余路径（首页 /、房间 /{roomId} 等）一律返回 index.html
+    return env.ASSETS.fetch(new Request(new URL('/', url.origin), request));
   },
 };
 

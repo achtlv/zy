@@ -32,11 +32,22 @@
   filter: brightness(1.06);
 }
 
-/* 手牌被选中（JS 抬起）时的投影加强 */
+/* 手牌：横竖屏自适应布局 + 选中动画
+   横屏/桌面：牌排成一行（左大右小，右牌遮左牌一半）
+   竖屏：保持扇形堆叠
+   选中：整张牌向上抬升（过渡动画）+ 阴影增强 + 微提亮 */
 .ddz-my-poker {
-  transition: filter 0.2s ease, top 0.15s ease-out, box-shadow 0.2s ease;
+  transition:
+    top 0.24s cubic-bezier(0.2, 0, 0, 1),
+    transform 0.24s cubic-bezier(0.2, 0, 0, 1),
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+  will-change: top, transform;
 }
-.ddz-my-poker[style*="z-index"] { box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.22); }
+.ddz-my-poker-selected {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.38), 0 5px 10px rgba(0, 0, 0, 0.26);
+  filter: brightness(1.08);
+}
 
 /* 明牌区（别人打出的牌）略小阴影 */
 .ddz-poker-list .ddz-poker:not(.ddz-my-poker) {
