@@ -1121,3 +1121,26 @@ body:has(#userseat0) .text-4xl.text-center { color: var(--md-table-text); }
   background-color: var(--md-ref-palette-error) !important;
   box-shadow: 0 0 0 2px rgba(186, 26, 26, 0.25);
 }
+
+/* ---------- 确认弹窗文字/按钮（不受牌桌浅色覆盖影响） ---------- */
+#confirm .text-xl, #confirm .text-2xl, #confirm .text-3xl, #confirm .text-lg {
+  color: var(--md-ref-palette-on-surface) !important;
+}
+#confirm .inline-block.flex-shrink-0.overflow-hidden.whitespace-nowrap.transition-colors.rounded-full.box-shadow {
+  background-color: var(--md-ref-palette-secondary-container) !important;
+  color: var(--md-ref-palette-on-secondary-container) !important;
+}
+#confirm .primary {
+  background-color: var(--md-ref-palette-primary) !important;
+  color: var(--md-ref-palette-on-primary) !important;
+}
+
+/* ---------- 出牌超时警告 ---------- */
+.timeout-warn {
+  animation: timeout-flash 1s ease-in-out infinite;
+  font-weight: 600;
+}
+@keyframes timeout-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
