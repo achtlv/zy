@@ -774,11 +774,12 @@ body:has(#userseat0) .text-center.text-sm {
   color: var(--md-table-text-dim);
 }
 body:has(#userseat0) .inline-block.flex-shrink-0.overflow-hidden.whitespace-nowrap.transition-colors.rounded-full.box-shadow {
-  background-color: rgba(255, 255, 255, 0.14);
-  color: var(--md-table-text);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(0, 0, 0, 0.38);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 body:has(#userseat0) .inline-block.flex-shrink-0.overflow-hidden.whitespace-nowrap.transition-colors.rounded-full.box-shadow.primary {
   background-color: var(--md-ref-palette-primary) !important;
@@ -1108,4 +1109,15 @@ body:has(#userseat0) .text-4xl.text-center { color: var(--md-table-text); }
   font-size: 0.75rem;
   color: var(--md-ref-palette-on-surface-variant);
   letter-spacing: 0.02em;
+}
+
+/* ---------- 离线玩家：座位灰度 + 半透明 + 离线徽标 ---------- */
+#userseat0.seat-offline, #userseat1.seat-offline, #userseat2.seat-offline, #userseat3.seat-offline {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+#userseat0.seat-offline .bg-gray-500, #userseat1.seat-offline .bg-gray-500,
+#userseat2.seat-offline .bg-gray-500, #userseat3.seat-offline .bg-gray-500 {
+  background-color: var(--md-ref-palette-error) !important;
+  box-shadow: 0 0 0 2px rgba(186, 26, 26, 0.25);
 }
